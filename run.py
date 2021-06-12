@@ -40,7 +40,6 @@ def main() -> None:
     conn = openstack.connect()
     ip = get_server_ip(conn)
     ssh_client = get_ssh_client(ip)
-    print(f"Executing {sys.argv[2]}")
     exit_status = execute_script_on_server(ssh_client, sys.argv[1])
     ssh_client.close()
     sys.exit(exit_status)
