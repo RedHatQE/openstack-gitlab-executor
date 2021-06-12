@@ -31,7 +31,7 @@ The container expects the following environment variables:
 
 `USERNAME` - Username for SSH connection to instances
 
-`PRIVATE_KEY_PATH` - Path to private key of the `KEY_PAIR_NAME` inside the container.
+`PRIVATE_KEY` - Private key content
 
 ### GitLab Runner variables
 
@@ -42,6 +42,10 @@ The container expects the following environment variables:
 `RUNNER_NAME` - Runner name
 
 `CI_SERVER_URL` - Runner URL
+
+`RUNNER_BUILDS_DIR` - Path to `builds` directory on the Openstack instance
+
+`RUNNER_CACHE_DIR` - Path to `cache` directory on the Openstack instance
 
 ### [Openstack variables](https://docs.openstack.org/python-openstackclient/latest/cli/man/openstack.html#environment-variables)
 
@@ -67,11 +71,15 @@ The container expects the following environment variables:
 
 Create an env file with all variables:
 
-```text
+```sh
+cat env.txt
+
 RUNNER_TAG_LIST=<your value>
 REGISTRATION_TOKEN=<your value>
 RUNNER_NAME=<your value>
 CI_SERVER_URL=<your value>
+RUNNER_BUILDS_DIR=<your value>
+RUNNER_CACHE_DIR=<your value>
 
 FLAVOR=<your value>
 BUILDER_IMAGE=<your value>
@@ -79,7 +87,6 @@ NETWORK=<your value>
 KEY_PAIR_NAME=<your value>
 SECURITY_GROUP=<your value>
 USERNAME=<your value>
-PRIVATE_KEY_PATH=/mnt/private_key/<private key>
 
 OS_AUTH_URL=<your value>
 OS_PROJECT_NAME=<your value>
@@ -96,7 +103,7 @@ Run a container:
 
 ```sh
 podman run -it \
-           --env-file=env \
-           -v <dir with private key>:/mnt/private_key/ \
+           -e PRIVATE_KEY="$(cat <private key filename>)"
+           --env-file=env.txt \
            localhost/openstack-gitlab-runner
 ```

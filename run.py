@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-import stat
 import sys
-from pathlib import Path
 
 import openstack
 import paramiko
@@ -14,15 +12,13 @@ def get_server_ip(conn: openstack.connection.Connection) -> str:
     return list(conn.compute.server_ips(server))[0].address
 
 
-def execute_script_on_server(
-    ssh: paramiko.client.SSHClient, sftp: paramiko.sftp_client.SFTPClient, script_path: str
-) -> None:
-    path = Path(script_path)
-    sftpattrs = sftp.put(script_path, path.name)
-    sftp.chmod(path.name, sftpattrs.st_mode | stat.S_IEXEC)
-    _, stdout, _ = ssh.exec_command(f"./{path.name}")
+def execute_script_on_server(ssh: paramiko.client.SSHClient, script_path: str) -> int:
+    stdin, stdout, _ = ssh.exec_command("/bin/bash")
+    with open(script_path) as f:
+        stdin.channel.send(f.read())
+        stdin.channel.shutdown_write()
     print(*stdout.readlines())
-    sftp.remove(path.name)
+    return stdout.channel.recv_exit_status()
 
 
 def get_ssh_client(ip: str) -> paramiko.client.SSHClient:
@@ -44,11 +40,10 @@ def main() -> None:
     conn = openstack.connect()
     ip = get_server_ip(conn)
     ssh_client = get_ssh_client(ip)
-    sftp_client = ssh_client.open_sftp()
     print(f"Executing {sys.argv[2]}")
-    execute_script_on_server(ssh_client, sftp_client, sys.argv[1])
-    sftp_client.close()
+    exit_status = execute_script_on_server(ssh_client, sys.argv[1])
     ssh_client.close()
+    sys.exit(exit_status)
 
 
 if __name__ == "__main__":

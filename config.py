@@ -8,4 +8,4 @@ NETWORK = os.getenv("CUSTOM_ENV_NETWORK") or os.getenv("NETWORK")
 KEY_PAIR_NAME = os.getenv("CUSTOM_ENV_KEY_PAIR_NAME") or os.getenv("KEY_PAIR_NAME")
 SECURITY_GROUP = os.getenv("CUSTOM_ENV_SECURITY_GROUP") or os.getenv("SECURITY_GROUP")
 USERNAME = os.getenv("CUSTOM_ENV_USERNAME") or os.getenv("USERNAME")
-PRIVATE_KEY_PATH = os.getenv("PRIVATE_KEY_PATH")
+PRIVATE_KEY_PATH = f"{os.getenv('HOME')}/priv_key"
