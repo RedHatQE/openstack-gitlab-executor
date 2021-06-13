@@ -16,8 +16,13 @@ echo "$PRIVATE_KEY" > "$HOME"/priv_key
 
 gitlab-runner register --non-interactive \
                        --executor=custom \
+                       --custom-config-exec="$HOME"/config.sh \
                        --custom-prepare-exec="$HOME"/prepare.py \
                        --custom-run-exec="$HOME"/run.py \
                        --custom-cleanup-exec="$HOME"/cleanup.py
+
+if [[ "$CONCURRENT" ]]; then
+    sed -i "s/concurrent = .*/concurrent = $CONCURRENT/g" "$HOME"/.gitlab-runner/config.toml
+fi
 
 gitlab-runner run

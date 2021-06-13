@@ -19,17 +19,17 @@ The container expects the following environment variables:
 
 ### Instance variables
 
-`FLAVOR` - Instance flavor reference
+`FLAVOR` - Default instance flavor reference
 
-`BUILDER_IMAGE` - Image to use for instance provisioning
+`BUILDER_IMAGE` - Default image to use for instance provisioning
 
-`NETWORK` - Network name
+`NETWORK` - Default network name
 
-`KEY_PAIR_NAME` - SSH key pair name
+`KEY_PAIR_NAME` - Default SSH key pair name
 
-`SECURITY_GROUP` - Security group
+`SECURITY_GROUP` - Default security group
 
-`USERNAME` - Username for SSH connection to instances
+`USERNAME` - Default username for SSH connection to instances
 
 `PRIVATE_KEY` - Private key content
 
@@ -46,6 +46,8 @@ The container expects the following environment variables:
 `RUNNER_BUILDS_DIR` - Path to `builds` directory on the Openstack instance
 
 `RUNNER_CACHE_DIR` - Path to `cache` directory on the Openstack instance
+
+`CONCURRENT` - Limits how many jobs can run concurrently (default 1)
 
 ### [Openstack variables](https://docs.openstack.org/python-openstackclient/latest/cli/man/openstack.html#environment-variables)
 
@@ -80,6 +82,7 @@ RUNNER_NAME=<your value>
 CI_SERVER_URL=<your value>
 RUNNER_BUILDS_DIR=<your value>
 RUNNER_CACHE_DIR=<your value>
+CONCURRENT=<your value>
 
 FLAVOR=<your value>
 BUILDER_IMAGE=<your value>
@@ -106,4 +109,22 @@ podman run -it \
            -e PRIVATE_KEY="$(cat <private key filename>)"
            --env-file=env.txt \
            localhost/openstack-gitlab-runner
+```
+
+You can override instance configuration defaults by providing environment variables in a GitLab CI
+job config. For example, if you want to use another Openstack image to provision builder instance
+you should provide the following:
+
+```yaml
+stages:
+  - build
+
+build:
+  stage: build
+  variables:
+    BUILDER_IMAGE: my-custom-image
+  tags:
+    - some-tag
+  script:
+    - some command
 ```

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
-import openstack
-
 import config
+import openstack
 
 
 def main() -> None:

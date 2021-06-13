@@ -36,7 +36,7 @@ LABEL maintainer="Dmitry Misharov <misharov@redhat.com>" \
 
 WORKDIR $HOME
 
-COPY cleanup.py config.py prepare.py run.py requirements.txt start.sh .
+COPY cleanup.py env.py config.sh prepare.py run.py requirements.txt start.sh .
 
 RUN dnf install -y --nodocs python38-pip git-core && \
     python3.8 -m venv $VENV && \
@@ -46,7 +46,7 @@ RUN dnf install -y --nodocs python38-pip git-core && \
     dnf clean all -y
 
 RUN chgrp -R 0 $HOME && \
-    chmod +x cleanup.py config.py prepare.py run.py start.sh && \
+    chmod +x cleanup.py config.sh prepare.py run.py start.sh && \
     chmod -R g=u $HOME
 
 USER 1001
