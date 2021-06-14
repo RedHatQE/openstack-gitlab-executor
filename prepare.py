@@ -57,7 +57,7 @@ def main() -> None:
         check_ssh(ip)
     except Exception:
         traceback.print_exc()
-        sys.exit(env.SYSTEM_FAILURE_EXIT_CODE)
+        sys.exit(int(env.SYSTEM_FAILURE_EXIT_CODE))
 
 
 if __name__ == "__main__":
