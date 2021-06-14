@@ -17,7 +17,8 @@ def execute_script_on_server(ssh: paramiko.client.SSHClient, script_path: str) -
     with open(script_path) as f:
         stdin.channel.send(f.read())
         stdin.channel.shutdown_write()
-    print(*stdout.readlines(), sep="", end="", flush=True)
+    for line in iter(lambda: stdout.readline(2048), ""):
+        print(line, sep="", end="", flush=True)
     return stdout.channel.recv_exit_status()
 
 
