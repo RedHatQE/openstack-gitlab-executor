@@ -8,7 +8,7 @@ import env
 
 
 def get_server_ip(conn: openstack.connection.Connection) -> str:
-    server = conn.compute.find_server(env.VM_NAME)
+    server = list(conn.compute.servers(name=env.VM_NAME, status="ACTIVE"))[0]
     return list(conn.compute.server_ips(server))[0].address
 
 
