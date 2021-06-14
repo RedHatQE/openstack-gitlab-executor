@@ -42,7 +42,8 @@ def main() -> None:
     ssh_client = get_ssh_client(ip)
     exit_status = execute_script_on_server(ssh_client, sys.argv[1])
     ssh_client.close()
-    sys.exit(exit_status)
+    if exit_status != 0:
+        sys.exit(env.BUILD_FAILURE_EXIT_CODE)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+import sys
+import traceback
+
 import openstack
 import paramiko
 
@@ -43,14 +46,18 @@ def check_ssh(ip: str) -> None:
 
 def main() -> None:
     print("Connecting to Openstack")
-    conn = openstack.connect()
-    print(f"Provisioning an instance {env.VM_NAME}")
-    server = provision_server(conn)
-    ip = get_server_ip(conn, server)
-    print(f"Instance {env.VM_NAME} is running on address {ip}")
-    conn.close()
-    print("Checking SSH connection")
-    check_ssh(ip)
+    try:
+        conn = openstack.connect()
+        print(f"Provisioning an instance {env.VM_NAME}")
+        server = provision_server(conn)
+        ip = get_server_ip(conn, server)
+        print(f"Instance {env.VM_NAME} is running on address {ip}")
+        conn.close()
+        print("Checking SSH connection")
+        check_ssh(ip)
+    except Exception:
+        traceback.print_exc()
+        sys.exit(env.SYSTEM_FAILURE_EXIT_CODE)
 
 
 if __name__ == "__main__":
