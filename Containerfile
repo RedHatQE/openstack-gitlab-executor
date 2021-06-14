@@ -1,4 +1,4 @@
-ARG GITLAB_RUNNER_VERSION=master
+ARG GITLAB_RUNNER_VERSION=v13.12.0
 
 FROM registry.access.redhat.com/ubi8:8.4 AS builder
 
@@ -26,7 +26,6 @@ ENV HOME=/home/gitlab-runner \
 ENV PATH="$VENV/bin:$PATH"
 
 LABEL maintainer="Dmitry Misharov <misharov@redhat.com>" \
-      version="$GITLAB_RUNNER_VERSION" \
       io.openshift.tags="gitlab,ci,runner" \
       name="openstack-gitlab-runner" \
       io.k8s.display-name="GitLab runner" \
