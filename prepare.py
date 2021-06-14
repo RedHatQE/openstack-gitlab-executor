@@ -45,16 +45,17 @@ def check_ssh(ip: str) -> None:
 
 
 def main() -> None:
-    print("Connecting to Openstack")
+    print("Connecting to Openstack", flush=True)
     try:
         conn = openstack.connect()
-        print(f"Provisioning an instance {env.VM_NAME}")
+        print(f"Provisioning an instance {env.VM_NAME}", flush=True)
         server = provision_server(conn)
         ip = get_server_ip(conn, server)
-        print(f"Instance {env.VM_NAME} is running on address {ip}")
+        print(f"Instance {env.VM_NAME} is running on address {ip}", flush=True)
         conn.close()
-        print("Checking SSH connection")
+        print("Checking SSH connection", flush=True)
         check_ssh(ip)
+        print("SSH connection has been established", flush=True)
     except Exception:
         traceback.print_exc()
         sys.exit(int(env.SYSTEM_FAILURE_EXIT_CODE))
