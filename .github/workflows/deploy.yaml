@@ -26,7 +26,7 @@ jobs:
         uses: redhat-actions/push-to-registry@v2.2
         with:
           image: openstack-gitlab-runner
-          tags: ${{ env.RELEASE_VERSION }}
+          tags: ${{ env.RELEASE_VERSION }} latest
           registry: quay.io/redhatqe
           username: ${{ secrets.QUAY_IO_USERNAME }}
           password: ${{ secrets.QUAY_IO_TOKEN }}
