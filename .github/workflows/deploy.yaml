@@ -19,7 +19,7 @@ jobs:
         uses: redhat-actions/buildah-build@v2.5
         with:
           image: quay.io/redhatqe/openstack-gitlab-runner
-          tags: ${{ env.RELEASE_VERSION }}
+          tags: ${{ env.RELEASE_VERSION }} latest
           dockerfiles: Containerfile
           oci: true
       - name: Push image to registry
