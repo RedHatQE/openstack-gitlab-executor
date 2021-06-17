@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import itertools
 import sys
 
 import openstack
@@ -13,11 +14,13 @@ def get_server_ip(conn: openstack.connection.Connection) -> str:
 
 
 def execute_script_on_server(ssh: paramiko.client.SSHClient, script_path: str) -> int:
-    stdin, stdout, _ = ssh.exec_command("/bin/bash")
+    stdin, stdout, stderr = ssh.exec_command("/bin/bash")
     with open(script_path) as f:
         stdin.channel.send(f.read())
         stdin.channel.shutdown_write()
-    for line in iter(lambda: stdout.readline(2048), ""):
+    stdout_iter = iter(lambda: stdout.readline(2048), "")
+    stderr_iter = iter(lambda: stderr.readline(2048), "")
+    for line in itertools.chain(stdout_iter, stderr_iter):
         print(line, sep="", end="", flush=True)
     return stdout.channel.recv_exit_status()
 
