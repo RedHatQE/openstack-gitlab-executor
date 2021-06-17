@@ -18,11 +18,13 @@ def execute_script_on_server(ssh: paramiko.client.SSHClient, script_path: str) -
     with open(script_path) as f:
         stdin.channel.send(f.read())
         stdin.channel.shutdown_write()
-    stdout_iter = iter(lambda: stdout.readline(2048), "")
-    stderr_iter = iter(lambda: stderr.readline(2048), "")
-    for line in itertools.chain(stdout_iter, stderr_iter):
+    for line in iter(lambda: stdout.readline(2048), ""):
         print(line, sep="", end="", flush=True)
-    return stdout.channel.recv_exit_status()
+    exit_status = stdout.channel.recv_exit_status()
+    if exit_status != 0:
+        for line in iter(lambda: stderr.readline(2048), ""):
+            print(line, sep="", end="", flush=True)
+    return exit_status
 
 
 def get_ssh_client(ip: str) -> paramiko.client.SSHClient:
