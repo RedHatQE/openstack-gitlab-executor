@@ -108,7 +108,7 @@ Run a container:
 podman run -it \
            -e PRIVATE_KEY="$(cat <private key filename>)"
            --env-file=env.txt \
-           localhost/openstack-gitlab-runner
+           quay.io/redhatqe/openstack-gitlab-runner:latest
 ```
 
 You can override instance configuration defaults by providing environment variables in a GitLab CI
