@@ -4,6 +4,9 @@ import traceback
 
 import openstack
 import paramiko
+from tenacity import retry
+from tenacity import stop_after_attempt
+from tenacity import wait_fixed
 
 import env
 
@@ -33,21 +36,19 @@ def check_ssh(ip: str) -> None:
     ssh_client = paramiko.client.SSHClient()
     pkey = paramiko.rsakey.RSASHA256Key.from_private_key_file(env.PRIVATE_KEY_PATH)
     ssh_client.set_missing_host_key_policy(paramiko.client.AutoAddPolicy())
-    for i in range(3):
-        try:
-            ssh_client.connect(
-                hostname=ip,
-                username=env.USERNAME,
-                pkey=pkey,
-                look_for_keys=False,
-                allow_agent=False,
-                timeout=20,
-            )
-        except paramiko.ssh_exception.NoValidConnectionsError:
-            if i == 2:
-                raise
-            else:
-                continue
+
+    @retry(reraise=True, stop=stop_after_attempt(3), wait=wait_fixed(10))
+    def connect():
+        ssh_client.connect(
+            hostname=ip,
+            username=env.USERNAME,
+            pkey=pkey,
+            look_for_keys=False,
+            allow_agent=False,
+            timeout=20,
+        )
+
+    connect()
     ssh_client.close()
 
 
