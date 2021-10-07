@@ -4,7 +4,7 @@ cat << EOS
 {
   "driver": {
     "name": "Openstack",
-    "version": "2021.10.05.0"
+    "version": "2021.10.07.0"
   }
 }
 EOS
