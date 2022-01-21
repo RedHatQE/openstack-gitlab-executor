@@ -30,14 +30,27 @@ def get_ssh_client(ip: str) -> paramiko.client.SSHClient:
     ssh_client = paramiko.client.SSHClient()
     pkey = paramiko.rsakey.RSASHA256Key.from_private_key_file(env.PRIVATE_KEY_PATH)
     ssh_client.set_missing_host_key_policy(paramiko.client.AutoAddPolicy())
-    ssh_client.connect(
-        hostname=ip,
-        username=env.USERNAME,
-        pkey=pkey,
-        look_for_keys=False,
-        allow_agent=False,
-        timeout=60,
-    )
+    def connect():
+        if len(env.PASSWORD) > 1:
+            ssh_client.connect(
+                hostname=ip,
+                username=env.USERNAME,
+                password=env.PASSWORD,
+                look_for_keys=False,
+                allow_agent=False,
+                timeout=60,
+            )
+        else:
+            ssh_client.connect(
+                hostname=ip,
+                username=env.USERNAME,
+                pkey=pkey,
+                passphrase=env.PASSPHRASE,
+                look_for_keys=False,
+                allow_agent=False,
+                timeout=60,
+            )
+    connect()
     return ssh_client
 
 

@@ -39,14 +39,25 @@ def check_ssh(ip: str) -> None:
 
     @retry(reraise=True, stop=stop_after_attempt(3), wait=wait_fixed(10))
     def connect():
-        ssh_client.connect(
-            hostname=ip,
-            username=env.USERNAME,
-            pkey=pkey,
-            look_for_keys=False,
-            allow_agent=False,
-            timeout=20,
-        )
+        if len(env.PASSWORD) > 1:
+            ssh_client.connect(
+                hostname=ip,
+                username=env.USERNAME,
+                password=env.PASSWORD,
+                look_for_keys=False,
+                allow_agent=False,
+                timeout=60,
+            )
+        else:
+            ssh_client.connect(
+                hostname=ip,
+                username=env.USERNAME,
+                pkey=pkey,
+                passphrase=env.PASSPHRASE,
+                look_for_keys=False,
+                allow_agent=False,
+                timeout=60,
+            )
 
     connect()
     ssh_client.close()
