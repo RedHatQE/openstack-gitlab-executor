@@ -37,7 +37,7 @@ def check_ssh(ip: str) -> None:
     pkey = paramiko.rsakey.RSASHA256Key.from_private_key_file(env.PRIVATE_KEY_PATH)
     ssh_client.set_missing_host_key_policy(paramiko.client.AutoAddPolicy())
 
-    @retry(reraise=True, stop=stop_after_attempt(3), wait=wait_fixed(10))
+    @retry(reraise=True, stop=stop_after_attempt(10), wait=wait_fixed(10))
     def connect():
         ssh_client.connect(
             hostname=ip,
