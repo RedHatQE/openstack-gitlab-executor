@@ -33,6 +33,10 @@ The container expects the following environment variables:
 
 `PRIVATE_KEY` - Private key content
 
+`PASSWORD`  - Password overrides a set PRIVATE_KEY (not recommended)
+
+`PASSPHRASE` - Passphrase to your private key
+
 ### GitLab Runner variables
 
 `RUNNER_TAG_LIST` - Tag list
@@ -90,6 +94,8 @@ NETWORK=<your value>
 KEY_PAIR_NAME=<your value>
 SECURITY_GROUP=<your value>
 USERNAME=<your value>
+PASSWORD=<your value>
+PASSPHRASE=<your value>
 
 OS_AUTH_URL=<your value>
 OS_PROJECT_NAME=<your value>
