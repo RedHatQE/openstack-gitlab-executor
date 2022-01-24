@@ -33,7 +33,7 @@ The container expects the following environment variables:
 
 `PRIVATE_KEY` - Private key content
 
-`PASSWORD`  - Password in case you do not use a private key (not recommended)
+`PASSWORD`  - Password overrides a set PRIVATE_KEY (not recommended)
 
 `PASSPHRASE` - Passphrase to your private key
 
