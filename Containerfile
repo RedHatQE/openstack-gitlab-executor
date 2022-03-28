@@ -1,6 +1,6 @@
 ARG GITLAB_RUNNER_VERSION=v13.12.0
 
-FROM registry.access.redhat.com/ubi8:8.4 AS builder
+FROM registry.access.redhat.com/ubi8:8.5 AS builder
 
 ARG GITLAB_RUNNER_VERSION
 
@@ -14,7 +14,7 @@ RUN dnf install -y git-core make go ncurses && \
     chmod a+x out/binaries/gitlab-runner && \
     out/binaries/gitlab-runner --version
 
-FROM registry.access.redhat.com/ubi8:8.4
+FROM registry.access.redhat.com/ubi8:8.5
 
 ARG GITLAB_RUNNER_VERSION
 

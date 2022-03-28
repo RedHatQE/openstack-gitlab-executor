@@ -33,6 +33,8 @@ The container expects the following environment variables:
 
 `PRIVATE_KEY` - Private key content
 
+`SSH_TIMEOUT` - Timeout for establishing SSH connection
+
 ### GitLab Runner variables
 
 `RUNNER_TAG_LIST` - Tag list

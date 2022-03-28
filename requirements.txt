@@ -16,7 +16,7 @@ munch==2.5.0
 netifaces==0.11.0
 openstacksdk==0.57.0
 os-service-types==1.7.0
-paramiko @ git+https://github.com/kkovaacs/paramiko.git@d43ed76a44c451b2b9031883a1a7e55de59fdf79 # adds support of modern RSA keys
+paramiko==2.10.3
 pbr==5.6.0
 pycparser==2.20
 PyNaCl==1.4.0

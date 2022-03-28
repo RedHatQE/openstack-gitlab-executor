@@ -5,13 +5,16 @@ import traceback
 import openstack
 import paramiko
 from tenacity import retry
+from tenacity import RetryCallState
 from tenacity import stop_after_attempt
 from tenacity import wait_fixed
 
 import env
 
 
-def provision_server(conn: openstack.connection.Connection) -> openstack.compute.v2.server.Server:
+def provision_server(
+    conn: openstack.connection.Connection,
+) -> openstack.compute.v2.server.Server:
     image = conn.compute.find_image(env.BUILDER_IMAGE)
     flavor = conn.compute.find_flavor(env.FLAVOR)
     network = conn.network.find_network(env.NETWORK)
@@ -34,10 +37,21 @@ def get_server_ip(
 
 def check_ssh(ip: str) -> None:
     ssh_client = paramiko.client.SSHClient()
-    pkey = paramiko.rsakey.RSASHA256Key.from_private_key_file(env.PRIVATE_KEY_PATH)
+    pkey = paramiko.rsakey.RSAKey.from_private_key_file(env.PRIVATE_KEY_PATH)
     ssh_client.set_missing_host_key_policy(paramiko.client.AutoAddPolicy())
 
-    @retry(reraise=True, stop=stop_after_attempt(10), wait=wait_fixed(10))
+    def before_callback(retry_state: RetryCallState):
+        print(
+            f"Attempt: {retry_state.attempt_number}; timeout: {env.SSH_TIMEOUT} seconds",
+            flush=True,
+        )
+
+    @retry(
+        reraise=True,
+        stop=stop_after_attempt(10),
+        wait=wait_fixed(int(env.SSH_TIMEOUT)),
+        before=before_callback,
+    )
     def connect():
         ssh_client.connect(
             hostname=ip,
@@ -45,7 +59,7 @@ def check_ssh(ip: str) -> None:
             pkey=pkey,
             look_for_keys=False,
             allow_agent=False,
-            timeout=20,
+            timeout=int(env.SSH_TIMEOUT),
         )
 
     connect()
@@ -53,6 +67,10 @@ def check_ssh(ip: str) -> None:
 
 
 def main() -> None:
+    print(
+        "Source code of this driver https://github.com/RedHatQE/openstack-gitlab-executor",
+        flush=True,
+    )
     print("Connecting to Openstack", flush=True)
     try:
         conn = openstack.connect()
@@ -61,7 +79,7 @@ def main() -> None:
         ip = get_server_ip(conn, server)
         print(f"Instance {env.VM_NAME} is running on address {ip}", flush=True)
         conn.close()
-        print("Checking SSH connection", flush=True)
+        print("Waiting for SSH connection", flush=True)
         check_ssh(ip)
         print("SSH connection has been established", flush=True)
     except Exception:
