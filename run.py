@@ -28,7 +28,7 @@ def execute_script_on_server(ssh: paramiko.client.SSHClient, script_path: str) -
 
 def get_ssh_client(ip: str) -> paramiko.client.SSHClient:
     ssh_client = paramiko.client.SSHClient()
-    pkey = paramiko.rsakey.RSASHA256Key.from_private_key_file(env.PRIVATE_KEY_PATH)
+    pkey = paramiko.rsakey.RSAKey.from_private_key_file(env.PRIVATE_KEY_PATH)
     ssh_client.set_missing_host_key_policy(paramiko.client.AutoAddPolicy())
     ssh_client.connect(
         hostname=ip,
@@ -36,7 +36,7 @@ def get_ssh_client(ip: str) -> paramiko.client.SSHClient:
         pkey=pkey,
         look_for_keys=False,
         allow_agent=False,
-        timeout=60,
+        timeout=int(env.SSH_TIMEOUT),
     )
     return ssh_client
 
