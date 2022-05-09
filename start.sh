@@ -3,7 +3,11 @@
 trap cleanup 1 2 3 6
 
 cleanup() {
-    gitlab-runner unregister --all-runners
+    if [[ "$UNREGISTER_ON_EXIT" ]]; then
+        gitlab-runner unregister --all-runners
+    else
+        gitlab-runner stop
+    fi
     sleep 5
 }
 
@@ -14,12 +18,16 @@ fi
 
 echo "$PRIVATE_KEY" > "$HOME"/priv_key
 
+if [[ "$REGISTER_ON_ENTER" ]]; then
 gitlab-runner register --non-interactive \
                        --executor=custom \
                        --custom-config-exec="$HOME"/config.sh \
                        --custom-prepare-exec="$HOME"/prepare.py \
                        --custom-run-exec="$HOME"/run.py \
                        --custom-cleanup-exec="$HOME"/cleanup.py
+else
+    gitlab-runner start
+fi
 
 if [[ "$CONCURRENT" ]]; then
     sed -i "s/concurrent = .*/concurrent = $CONCURRENT/g" "$HOME"/.gitlab-runner/config.toml
