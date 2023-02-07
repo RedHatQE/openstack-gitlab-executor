@@ -51,6 +51,10 @@ The container expects the following environment variables:
 
 `CONCURRENT` - Limits how many jobs can run concurrently (default 1)
 
+`UNREGISTER_ON_EXIT` - set this in case you want to unregister the runner on container stop (default not set)
+
+`REGISTER_ON_ENTER` - set this in case you want to register the runner on container start (default not set)
+
 ### [Openstack variables](https://docs.openstack.org/python-openstackclient/latest/cli/man/openstack.html#environment-variables)
 
 `OS_AUTH_URL` - Openstack authentication URL
@@ -110,6 +114,7 @@ Run a container:
 podman run -it \
            -e PRIVATE_KEY="$(cat <private key filename>)"
            --env-file=env.txt \
+           -v ~/runner.toml:/home/gitlab-runner/.gitlab-runner/config.toml
            quay.io/redhatqe/openstack-gitlab-runner:latest
 ```
 
