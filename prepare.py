@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import traceback
+from operator import itemgetter
 
 import openstack
 import paramiko
@@ -12,10 +13,36 @@ from tenacity import wait_fixed
 import env
 
 
+def _duplicated_image_message_detected(image_name: str, message: str) -> bool:
+    return f"More than one Image exists with the name '{image_name}'" in message
+
+
+def _latest_updated_image_by_name(
+    connection: openstack.connection.Connection, image_name: str
+) -> openstack.compute.v2.image.Image:
+    filtered_images = [x for x in connection.image.images() if x.name == image_name]
+    return max(filtered_images, key=itemgetter("updated_at"))
+
+
+def _try_get_image(
+    connection: openstack.connection.Connection, image_name: str
+) -> openstack.compute.v2.image.Image:
+
+    try:
+        image = connection.compute.find_image(image_name)
+    except openstack.exceptions.DuplicateResource as e:
+        if _duplicated_image_message_detected(image_name, e.message):
+            image = _latest_updated_image_by_name(connection, image_name)
+            print(f"Multiple images with the same name, using latest: {image.id}")
+        else:
+            raise e
+    return image
+
+
 def provision_server(
     conn: openstack.connection.Connection,
 ) -> openstack.compute.v2.server.Server:
-    image = conn.compute.find_image(env.BUILDER_IMAGE)
+    image = _try_get_image(conn, env.BUILDER_IMAGE)
     flavor = conn.compute.find_flavor(env.FLAVOR)
     network = conn.network.find_network(env.NETWORK)
     server = conn.compute.create_server(
